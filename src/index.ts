@@ -1,7 +1,7 @@
 import { McpServer as Server } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { z } from "zod";
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
@@ -33,7 +33,7 @@ function generateRandomString(length: number): string {
 }
 
 // Step 1: Request User Authorization (as per Spotify docs)
-app.get("/login", async (req, res) => {
+app.get("/login", async (req: Request, res: Response) => {
   try {
     const { default: open } = await import("open");
     
@@ -63,7 +63,7 @@ app.get("/login", async (req, res) => {
 });
 
 // Step 2: Handle the callback and exchange code for access token
-app.get("/callback", async (req, res) => {
+app.get("/callback", async (req: Request, res: Response) => {
   const code = req.query.code as string;
   const state = req.query.state as string;
   const error = req.query.error as string;
@@ -176,12 +176,12 @@ server.tool(
 
 let transport: SSEServerTransport | null = null;
 
-app.get("/sse", (req, res) => {
+app.get("/sse", (req: Request, res: Response) => {
   transport = new SSEServerTransport("/messages", res);
   server.connect(transport);
 });
 
-app.post("/messages", (req, res) => {
+app.post("/messages", (req: Request, res: Response) => {
   if (transport) {
     transport.handlePostMessage(req, res);
   }
@@ -199,12 +199,12 @@ mcpApp.use(cors());
 
 let mcpTransport: SSEServerTransport | null = null;
 
-mcpApp.get("/sse", (req, res) => {
+mcpApp.get("/sse", (req: Request, res: Response) => {
   mcpTransport = new SSEServerTransport("/messages", res);
   server.connect(mcpTransport);
 });
 
-mcpApp.post("/messages", (req, res) => {
+mcpApp.post("/messages", (req: Request, res: Response) => {
   if (mcpTransport) {
     mcpTransport.handlePostMessage(req, res);
   }
