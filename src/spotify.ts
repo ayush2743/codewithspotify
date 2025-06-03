@@ -1,5 +1,5 @@
 import { McpServer as Server } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { spotifyApi, isAuthenticated } from "./auth.js";
+import { spotifyApi, isAuthenticated, isSpotifyAuthenticated } from "./auth.js";
 import { ensureAuthenticated } from "./auth.js";
 
 // Register all Spotify MCP tools
@@ -10,13 +10,11 @@ export function registerSpotifyTools(server: Server) {
     "Get the currently playing Spotify track",
     {},
     async () => {
-      // Wait for authentication to complete
-      const isReady = await ensureAuthenticated();
-      
-      if (!isReady) {
+      // Check authentication status first
+      if (!isSpotifyAuthenticated()) {
         return {
           content: [
-            { type: "text", text: "❌ Authentication failed or timed out. Please try again." },
+            { type: "text", text: "🔐 You need to authenticate your Spotify account first. Please go to https://codewithspotify.onrender.com/login to authenticate." },
           ],
         };
       }
