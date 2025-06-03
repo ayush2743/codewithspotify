@@ -1,6 +1,5 @@
 import { McpServer as Server } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { spotifyApi, isAuthenticated, isSpotifyAuthenticated } from "./auth.js";
-import { ensureAuthenticated } from "./auth.js";
+import { spotifyApi, isSpotifyAuthenticated, refreshAccessToken } from "./auth.js";
 
 // Register all Spotify MCP tools
 export function registerSpotifyTools(server: Server) {
@@ -48,11 +47,18 @@ export function registerSpotifyTools(server: Server) {
       } catch (err) {
         console.error("Error fetching now playing:", err);
         
-        // If it's an auth error, try to re-authenticate
+        // If it's an auth error, try to refresh token
         if (err instanceof Error && (err.message.includes('401') || err.message.includes('Unauthorized'))) {
-          return {
-            content: [{ type: "text", text: "🔐 Token expired. Please try again - authentication will be triggered automatically." }],
-          };
+          const refreshed = await refreshAccessToken();
+          if (refreshed) {
+            return {
+              content: [{ type: "text", text: "🔄 Token refreshed. Please try the command again." }],
+            };
+          } else {
+            return {
+              content: [{ type: "text", text: "🔐 Authentication expired. Please visit https://codewithspotify.onrender.com/login to re-authenticate." }],
+            };
+          }
         }
         
         return {
