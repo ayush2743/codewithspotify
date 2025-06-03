@@ -27,8 +27,7 @@ app.get("/login", loginHandler);
 app.get("/callback", callbackHandler);
 
 async function main() {
-  let transport: SSEServerTransport | null = null;
-  
+  let transport: SSEServerTransport | null = null;    
   app.get("/sse", (req: Request, res: Response) => {
     transport = new SSEServerTransport("/messages", res);
     server.connect(transport);
