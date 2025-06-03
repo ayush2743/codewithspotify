@@ -42,10 +42,10 @@ async function main() {
 
   // Start server
   app.listen(3000, () => {
-    console.log(`🚀 Spotify auth server started on http://localhost:3000`);
+    console.log(`🚀 Spotify auth server started on https://codewithspotify.onrender.com`);
     console.log(`🎧 Authentication will open automatically when needed`);
-    console.log(`📡 MCP server started on http://localhost:3000`);
-    console.log(`📡 MCP SSE endpoint: http://localhost:3000/sse`);
+    console.log(`📡 MCP server started on https://codewithspotify.onrender.com`);
+    console.log(`📡 MCP SSE endpoint: https://codewithspotify.onrender.com/sse`);
   });
 }
 

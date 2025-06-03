@@ -452,8 +452,8 @@ export async function performAuthentication(): Promise<boolean> {
 
     // Open browser for authentication
     import("open").then(({ default: open }) => {
-      open("http://localhost:3000/login").catch((error) => {
-        console.log("Failed to open browser automatically. Please visit: http://localhost:3000/login");
+      open("https://codewithspotify.onrender.com/login").catch((error) => {
+        console.log("Failed to open browser automatically. Please visit: https://codewithspotify.onrender.com/login");
       });
     });
   });
