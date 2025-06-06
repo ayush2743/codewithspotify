@@ -29,6 +29,8 @@ app.get("/callback", callbackHandler);
 // Map to store transports per email
 const transports = new Map<string, SSEServerTransport>();
 
+const BASE_URL = process.env.IS_IN_PRODUCTION === 'true' ? 'https://codewithspotify.onrender.com' : 'http://localhost:3000';
+
 async function main() {
   app.get("/sse", (req: Request, res: Response) => {
     const email = req.query.email as string;
@@ -61,10 +63,10 @@ async function main() {
 
   // Start server
   app.listen(3000, () => {
-    console.log(`🚀 Spotify auth server started on http://localhost:3000`);
+    console.log(`🚀 Spotify auth server started on ${BASE_URL}`);
     console.log(`🎧 Authentication will open automatically when needed`);
-    console.log(`📡 MCP server started on http://localhost:3000`);
-    console.log(`📡 MCP SSE endpoint: http://localhost:3000/sse`);
+    console.log(`📡 MCP server started on ${BASE_URL}`);
+    console.log(`📡 MCP SSE endpoint: ${BASE_URL}/sse`);
   });
 }
 

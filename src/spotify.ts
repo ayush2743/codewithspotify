@@ -2,6 +2,8 @@ import { McpServer as Server } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { spotifyApi, isSpotifyAuthenticated, refreshAccessToken, getSpotifyApiForUser } from "./auth.js";
 import { z } from "zod";
 
+const BASE_URL = process.env.IS_IN_PRODUCTION === 'true' ? 'https://codewithspotify.onrender.com' : 'http://localhost:3000';
+
 // Register all Spotify MCP tools
 export function registerSpotifyTools(server: Server) {
   // Register now-playing tool
@@ -28,7 +30,7 @@ export function registerSpotifyTools(server: Server) {
       if (!isSpotifyAuthenticated(email)) {
         return {
           content: [
-            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to http://localhost:3000/login?email=${email} to authenticate.` },
+            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to ${BASE_URL}/login?email=${email} to authenticate.` },
           ],
         };
       }
@@ -71,7 +73,7 @@ export function registerSpotifyTools(server: Server) {
             };
           } else {
             return {
-              content: [{ type: "text", text: `🔐 Authentication expired. Please visit http://localhost:3000/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
+              content: [{ type: "text", text: `🔐 Authentication expired. Please visit ${BASE_URL}/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
             };
           }
         }
@@ -100,7 +102,7 @@ export function registerSpotifyTools(server: Server) {
       if (!isSpotifyAuthenticated(email)) {
         return {
           content: [
-            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to http://localhost:3000/login?email=${email} to authenticate.` },
+            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to ${BASE_URL}/login?email=${email} to authenticate.` },
           ],
         };
       }
@@ -155,7 +157,7 @@ export function registerSpotifyTools(server: Server) {
             };
           } else {
             return {
-              content: [{ type: "text", text: `🔐 Authentication expired. Please visit http://localhost:3000/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
+              content: [{ type: "text", text: `🔐 Authentication expired. Please visit ${BASE_URL}/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
             };
           }
         }
@@ -184,7 +186,7 @@ export function registerSpotifyTools(server: Server) {
       if (!isSpotifyAuthenticated(email)) {
         return {
           content: [
-            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to http://localhost:3000/login?email=${email} to authenticate.` },
+            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to ${BASE_URL}/login?email=${email} to authenticate.` },
           ],
         };
       }
@@ -239,7 +241,7 @@ export function registerSpotifyTools(server: Server) {
             };
           } else {
             return {
-              content: [{ type: "text", text: `🔐 Authentication expired. Please visit http://localhost:3000/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
+              content: [{ type: "text", text: `🔐 Authentication expired. Please visit ${BASE_URL}/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
             };
           }
         }
