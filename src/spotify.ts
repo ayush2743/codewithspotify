@@ -28,7 +28,7 @@ export function registerSpotifyTools(server: Server) {
       if (!isSpotifyAuthenticated(email)) {
         return {
           content: [
-            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to https://codewithspotify.onrender.com/login?email=${email} to authenticate.` },
+            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to http://localhost:3000/login?email=${email} to authenticate.` },
           ],
         };
       }
@@ -71,12 +71,180 @@ export function registerSpotifyTools(server: Server) {
             };
           } else {
             return {
-              content: [{ type: "text", text: `🔐 Authentication expired. Please visit https://codewithspotify.onrender.com/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
+              content: [{ type: "text", text: `🔐 Authentication expired. Please visit http://localhost:3000/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
             };
           }
         }
         return {
           content: [{ type: "text", text: "❌ Failed to fetch currently playing track. Make sure Spotify is active on a device." }],
+        };
+      }
+    }
+  );
+
+  // Register skip-next tool
+  server.tool(
+    "skip-next",
+    "Skip to the next track in your Spotify queue",
+    {
+      email: z.string().describe("Your unique ID (e.g., email), you need to provide it for every request"),
+    },
+    async ({ email }) => {
+      if (!email) {
+        return {
+          content: [
+            { type: "text", text: "🔐 You need to provide an email address. for every request" },
+          ],
+        };
+      }
+      if (!isSpotifyAuthenticated(email)) {
+        return {
+          content: [
+            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to http://localhost:3000/login?email=${email} to authenticate.` },
+          ],
+        };
+      }
+      const userSpotifyApi = getSpotifyApiForUser(email);
+      if (!userSpotifyApi) {
+        return {
+          content: [
+            { type: "text", text: "❌ Spotify API not available for this user" },
+          ],
+        };
+      }
+      try {
+        const devices = await userSpotifyApi.player.getAvailableDevices();
+        const activeDevice = devices.devices.find((device: any) => device.is_active);
+        const deviceId = activeDevice?.id;
+        if (!deviceId) {
+          return {
+            content: [
+              { type: "text", text: "❌ No active Spotify device found. Please start playback on a device first." },
+            ],
+          };
+        }
+        try {
+          await userSpotifyApi.player.skipToNext(deviceId || '');
+        } catch (err) {
+          // If it's a SyntaxError from JSON.parse, treat as success
+          if (
+            err instanceof SyntaxError &&
+            err.message.includes("Unexpected token") &&
+            err.message.includes("is not valid JSON")
+          ) {
+            return {
+              content: [
+                { type: "text", text: "⏭️ Skipped to the next track!" },
+              ],
+            };
+          }
+          throw err;
+        }
+        return {
+          content: [
+            { type: "text", text: "⏭️ Skipped to the next track!" },
+          ],
+        };
+      } catch (err) {
+        console.error("Error skipping to next track:", err);
+        if (err instanceof Error && (err.message.includes('401') || err.message.includes('Unauthorized'))) {
+          const refreshed = await refreshAccessToken(email);
+          if (refreshed) {
+            return {
+              content: [{ type: "text", text: "🔄 Token refreshed. Please try the command again." }],
+            };
+          } else {
+            return {
+              content: [{ type: "text", text: `🔐 Authentication expired. Please visit http://localhost:3000/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
+            };
+          }
+        }
+        return {
+          content: [{ type: "text", text: "❌ Failed to skip to the next track. Make sure Spotify is active on a device and you have Premium." }],
+        };
+      }
+    }
+  );
+
+  // Register skip-previous tool
+  server.tool(
+    "skip-previous",
+    "Skip to the previous track in your Spotify queue",
+    {
+      email: z.string().describe("Your unique ID (e.g., email), you need to provide it for every request"),
+    },
+    async ({ email }) => {
+      if (!email) {
+        return {
+          content: [
+            { type: "text", text: "🔐 You need to provide an email address. for every request" },
+          ],
+        };
+      }
+      if (!isSpotifyAuthenticated(email)) {
+        return {
+          content: [
+            { type: "text", text: `🔐 You need to authenticate your Spotify account first. Please go to http://localhost:3000/login?email=${email} to authenticate.` },
+          ],
+        };
+      }
+      const userSpotifyApi = getSpotifyApiForUser(email);
+      if (!userSpotifyApi) {
+        return {
+          content: [
+            { type: "text", text: "❌ Spotify API not available for this user" },
+          ],
+        };
+      }
+      try {
+        const devices = await userSpotifyApi.player.getAvailableDevices();
+        const activeDevice = devices.devices.find((device: any) => device.is_active);
+        const deviceId = activeDevice?.id;
+        if (!deviceId) {
+          return {
+            content: [
+              { type: "text", text: "❌ No active Spotify device found. Please start playback on a device first." },
+            ],
+          };
+        }
+        try {
+          await userSpotifyApi.player.skipToPrevious(deviceId || '');
+        } catch (err) {
+          // If it's a SyntaxError from JSON.parse, treat as success
+          if (
+            err instanceof SyntaxError &&
+            err.message.includes("Unexpected token") &&
+            err.message.includes("is not valid JSON")
+          ) {
+            return {
+              content: [
+                { type: "text", text: "⏮️ Skipped to the previous track!" },
+              ],
+            };
+          }
+          throw err;
+        }
+        return {
+          content: [
+            { type: "text", text: "⏮️ Skipped to the previous track!" },
+          ],
+        };
+      } catch (err) {
+        console.error("Error skipping to previous track:", err);
+        if (err instanceof Error && (err.message.includes('401') || err.message.includes('Unauthorized'))) {
+          const refreshed = await refreshAccessToken(email);
+          if (refreshed) {
+            return {
+              content: [{ type: "text", text: "🔄 Token refreshed. Please try the command again." }],
+            };
+          } else {
+            return {
+              content: [{ type: "text", text: `🔐 Authentication expired. Please visit http://localhost:3000/login?email=${encodeURIComponent(email)} to re-authenticate.` }],
+            };
+          }
+        }
+        return {
+          content: [{ type: "text", text: "❌ Failed to skip to the previous track. Make sure Spotify is active on a device and you have Premium." }],
         };
       }
     }

@@ -131,6 +131,12 @@ export const callbackHandler = async (req: Request, res: Response) => {
     });
     res.send(getSuccessPageHTML());
     console.log(`Spotify authenticated successfully for ${email}`);
+
+    console.log("-------------------------------- ");
+    console.log(userTokens);
+    console.log("-------------------------------- ");
+
+    
   } catch (error) {
     console.error("Error exchanging code for token:", error);
     res.status(500).send(getErrorPageHTML(`Failed to exchange authorization code for tokens: ${(error as Error).message}`, "💥"));
