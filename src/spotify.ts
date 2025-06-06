@@ -17,7 +17,7 @@ export function registerSpotifyTools(server: Server) {
   
       // Check authentication status first
 
-      console.log("Email:", email);
+      console.log("Now playing tool called", email);
 
       if(!email) {
         return {

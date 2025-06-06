@@ -49,11 +49,12 @@ async function main() {
       res.status(400).send("Missing email parameter in /messages endpoint");
       return;
     }
+    const transport = transports.get(email);
     console.log("++++++++++++++++++++");
-    console.log("transports", transports);
+    console.log("transports size", transports.size);
+    console.log("transports call", transports.get(email));
     console.log("++++++++++++++++++++");
     
-    const transport = transports.get(email);
     if (transport) {
       transport.handlePostMessage(req, res);
     } else {
